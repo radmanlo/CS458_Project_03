@@ -9,7 +9,7 @@ const mapContainerStyle = {
 };
 
 export default function App(){
-
+  const [moonDis, setMoonDis] = useState(0);
   const [position, center] = useState({
     lat: 39.933365,
     lng: 32.859741,
@@ -22,11 +22,17 @@ export default function App(){
 
   function askedCor() {
     if ( document.getElementById("Latitude1").value != "" && document.getElementById("Longitude1").value != ""){
-        const newCenter ={
+        var lat = document.getElementById("Latitude1").value;
+        var lng = document.getElementById("Longitude1").value;
+        if ((lat <= 90 && lat >= -90) && (lng <= 180 && lng >= -180)){
+          const newCenter ={
             lat: parseFloat(document.getElementById("Latitude1").value),
             lng: parseFloat(document.getElementById("Longitude1").value),
-        };
-        center(newCenter);
+          };
+          center(newCenter);
+        }
+        else
+          alert ("invalid latitude or longitude") 
     }
     else {
         alert ("Latidude or Longitude leaves empty ")
@@ -34,6 +40,7 @@ export default function App(){
   }
 
   function userCoordinate(){
+    
     if ("geolocation" in navigator) {
         console.log("Available");
     } 
@@ -56,14 +63,15 @@ export default function App(){
   }
 
   function moonDistance(){
-    if ( document.getElementById("Latitude2").value != ""){
+    if ( document.getElementById("Latitude2").value != "" ){
         var lat = document.getElementById("Latitude2").value;
         var lng = document.getElementById("Longitude2").value;
         var SunCalc = require('suncalc');
         var times = SunCalc.getTimes(new Date(), lat, lng);
         var objDistance = SunCalc.getMoonPosition(times.sunrise, lat, lng); 
-        alert("Coordinate with Latitude: " + lat + " and Longitude: " + lng + " Has " +  
-                objDistance.distance + " Distance from Moon");
+        setMoonDis(objDistance.distance);
+        //alert("Coordinate with Latitude: " + lat + " and Longitude: " + lng + " Has " +  
+        //        objDistance.distance + " Distance from Moon");
     }
     else{
         navigator.geolocation.getCurrentPosition(function(position){
@@ -72,7 +80,8 @@ export default function App(){
             var SunCalc = require('suncalc');
             var times = SunCalc.getTimes(new Date(), userLat, userLng);
             var objDistance = SunCalc.getMoonPosition(times.sunrise, userLat, userLng); 
-            alert(" Your Device has " + objDistance.distance + " Distance from Moon");
+            setMoonDis(objDistance.distance);
+            //alert(" Your Device has " + objDistance.distance + " Distance from Moon");
         });
     }
   }
@@ -87,9 +96,17 @@ export default function App(){
           <h3 data-testid="headCor" style={{textAlign:"center"}}>
             Your Desired Cordinate
           </h3>
-          <div style={{ color:"black", marginTop:"1vh", textAlign:"center"}}>
+          <div style={{ color:"black", marginTop:"1vh", textAlign:"center", marginBottom: "2vh"}}>
               <input data-testid="latitudeIn1" da type= "number" id="Latitude1" placeholder="Latitude" style={{ blockSize:"3vh", background:""}}></input>   
               <input data-testid="longitudeIn1" type= "number" id="Longitude1" placeholder="Longitude" style={{ blockSize:"3vh"}}></input>   
+          </div>
+          <div style={{textAlign:"center"}}>
+            <text >Current Map center</text>
+          </div>
+          <div style={{textAlign:"center"}}> 
+            <output data-testid="outLat" style={{color:"white"}}>{position.lat}</output>
+            <text> , </text>
+            <output data-testid="outLng" style={{color:"white"}}>{position.lng}</output>
           </div>
           <div style={{textAlign:"center"}}>
               <button data-testid="findBtn" id="Submit1" typeof="submit" style={{ width:"100px", marginTop:"4vh", marginBottom:"2vh"}}
@@ -105,15 +122,19 @@ export default function App(){
         <div style={{background:"#383838", marginTop:"5vh", textAlign:"center"}}>
           <h3 data-testid="headMoon">Calculating Distance To moon</h3>
           <div style={{ color:"black", marginTop:"1vh"}}>
-              <input data-testid="latMoon" type= "number" id="Latitude2" placeholder="Latitude" style={{ blockSize:"3vh", background:""}}></input>   
+              <input data-testid="latMoon" type= "number" id="Latitude2" placeholder="Latitude"  style={{ blockSize:"3vh", background:""}}></input>   
               <input data-testid="lngMoon" type= "number" id="Longitude2" placeholder="Longitude" style={{ blockSize:"3vh"}}></input>   
           </div>
           <h6>
               (if latitude and longitude leaves empty it will use your device coordinate)
-          </h6>
+          </h6>         
+          <div><text>Distance to Moon: </text></div>
           <div>
-              <button data-testid="btnMoon" id="Submit3" typeof="submit" style={{ width:"200px", marginTop:"1vh", marginBottom:"2vh"}}
-                      onClick={moonDistance}>Calculate the Distance to Moon</button>
+            <output data-testid="outDis" style={{color:"white"}}>{moonDis}</output>
+          </div>
+          <div>
+            <button data-testid="moonBtn" id="Submit3" typeof="submit" style={{ width:"200px", marginTop:"1vh", marginBottom:"2vh"}}
+                    onClick={moonDistance}>Calculate the Distance to Moon</button>
           </div>
         </div>
       </div>

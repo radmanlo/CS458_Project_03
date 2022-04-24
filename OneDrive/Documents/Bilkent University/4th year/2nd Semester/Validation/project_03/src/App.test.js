@@ -1,6 +1,6 @@
 import React, { Component } from "react"
 import App from "./App"
-import {render} from "@testing-library/react"
+import {render, fireEvent} from "@testing-library/react"
 import "@testing-library/jest-dom/extend-expect"
 
 test("Tasks header (h1) render with correct text", ()=>{
@@ -59,19 +59,178 @@ test("User inputs for distance to moon (longitude)", ()=>{
 
 test("button for calculating to moon", ()=>{
   const {getByTestId} = render(<App/>);
-  const btnEl = getByTestId("btnMoon");
+  const btnEl = getByTestId("moonBtn");
   expect(btnEl.textContent).toBe("Calculate the Distance to Moon");
 })
 
+test("Check Center Latitude", () =>{
+  const {getByTestId} = render(<App/>);
+  const outEl = getByTestId("outLat");
+  expect(outEl.textContent).toBe("39.933365");
+})
+
+test("Check Center Longitude", () =>{
+  const {getByTestId} = render(<App/>);
+  const outEl = getByTestId("outLng");
+  expect(outEl.textContent).toBe("32.859741");
+})
+
+test("Check center does not change when button cilick but inputs are empty", () =>{
+  const {getByTestId} = render(<App/>);
+  const outLat = getByTestId("outLat");
+  const outLng = getByTestId("outLng");
+  const findBtn = getByTestId("findBtn");
+
+  fireEvent.click(findBtn);
+
+  expect(outLat.textContent).toBe("39.933365")
+  expect(outLng.textContent).toBe("32.859741")
+
+})
+
+test("input is changing or not", () =>{
+  const {getByTestId} = render(<App/>);
+  const inputLat = getByTestId("latitudeIn1");
+  const inputLng = getByTestId("longitudeIn1");
+
+  expect(inputLat.value).toBe("")
+  expect(inputLng.value).toBe("")
+
+  fireEvent.change(inputLat, {
+    target:{
+      value: "51"
+    }
+  });
+
+  fireEvent.change(inputLng, {
+    target:{
+      value: "-0.1"
+    }
+  });
+
+  expect(inputLat.value).toBe("51")
+  expect(inputLng.value).toBe("-0.1")
+})
+
+test("Check whether the center is changing", () =>{
+  const {getByTestId} = render(<App/>);
+  const inputLat = getByTestId("latitudeIn1");
+  const inputLng = getByTestId("longitudeIn1");
+  const outLat = getByTestId("outLat");
+  const outLng = getByTestId("outLng");
+  const findBtn = getByTestId("findBtn");
+  
+  fireEvent.change(inputLat, {
+    target:{
+      value: "51"
+    }
+  });
+
+  fireEvent.change(inputLng, {
+    target:{
+      value: "-0.1"
+    }
+  })
+
+  fireEvent.click(findBtn);
+
+  expect(outLat.textContent).toBe("51");
+  expect(outLng.textContent).toBe("-0.1");
+
+})
+
+test("check latitude should be is less than 90 and bigger than -90", () =>{
+  const {getByTestId} = render(<App/>);
+  const inputLat = getByTestId("latitudeIn1");
+  const outLat = getByTestId("outLat");
+  const findBtn = getByTestId("findBtn");
+  
+
+  fireEvent.change(inputLat, {
+    target:{
+      value: "100"
+    }
+  });
+
+  fireEvent.click(findBtn);
+
+  expect(outLat.textContent).toBe("39.933365");
+
+  fireEvent.change(inputLat, {
+    target:{
+      value: "-100"
+    }
+  });
+
+  fireEvent.click(findBtn);
+
+  expect(outLat.textContent).toBe("39.933365");
+})
+
+test("check longitude should be is less than 180 and bigger than -180", () =>{
+  const {getByTestId} = render(<App/>);
+  const inputLng = getByTestId("longitudeIn1");
+  const outLng = getByTestId("outLng");
+  const findBtn = getByTestId("findBtn");
+  
+
+  fireEvent.change(inputLng, {
+    target:{
+      value: "181"
+    }
+  });
+
+  fireEvent.click(findBtn);
+
+  expect(outLng.textContent).toBe("32.859741");
+
+  fireEvent.change(inputLng, {
+    target:{
+      value: "-181"
+    }
+  });
+
+  fireEvent.click(findBtn);
+
+  expect(outLng.textContent).toBe("32.859741");
+})
 
 
+test("Check whether the center is changing", () =>{
+  const {getByTestId} = render(<App/>);
+  const inputLat = getByTestId("latMoon");
+  const inputLng = getByTestId("lngMoon");
+  const outDis = getByTestId("outDis");
+  const moonBtn = getByTestId("moonBtn");
+  
+  fireEvent.change(inputLat, {
+    target:{
+      value: "51"
+    }
+  });
 
+  fireEvent.change(inputLng, {
+    target:{
+      value: "-0.1"
+    }
+  })
 
+  fireEvent.click(moonBtn);
 
+  expect(outDis.textContent).not.toBe("0");
 
+})
 
+test("Distance to Moon is calculating", () =>{
+  const {getByTestId} = render(<App/>);
+  const outDis= getByTestId("outDis");
+  const moonBtn = getByTestId("moonBtn");
 
+  fireEvent.click(moonBtn);
 
+  expect(outDis.textContent).toBe("");
+
+})
 
 
 
