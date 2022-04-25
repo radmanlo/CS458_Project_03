@@ -75,7 +75,7 @@ test("Check Center Longitude", () =>{
   expect(outEl.textContent).toBe("32.859741");
 })
 
-test("Check center does not change when button cilick but inputs are empty", () =>{
+test("Check center does not change when the button is cilicked but inputs are empty", () =>{
   const {getByTestId} = render(<App/>);
   const outLat = getByTestId("outLat");
   const outLng = getByTestId("outLng");
@@ -196,7 +196,7 @@ test("check longitude should be is less than 180 and bigger than -180", () =>{
 })
 
 
-test("Check whether the center is changing", () =>{
+test("Check whether the distance between the core of the moon and desired geolocation is Calculated or not", () =>{
   const {getByTestId} = render(<App/>);
   const inputLat = getByTestId("latMoon");
   const inputLng = getByTestId("lngMoon");
@@ -221,14 +221,14 @@ test("Check whether the center is changing", () =>{
 
 })
 
-test("Distance to Moon is calculating", () =>{
+test("Check whether the distance between the core of the moon and your device's geolocation is Calculated or not", () =>{
   const {getByTestId} = render(<App/>);
   const outDis= getByTestId("outDis");
   const moonBtn = getByTestId("moonBtn");
 
   fireEvent.click(moonBtn);
 
-  expect(outDis.textContent).toBe("");
+  expect(outDis.textContent).toBe("0");
 
 })
 
